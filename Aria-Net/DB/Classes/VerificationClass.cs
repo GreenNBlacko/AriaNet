@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Aria_Net.DB.Classes {
+﻿namespace Aria_Net.DB.Classes {
 	public class VerificationClass {
 		public int VerificationID { get; set; }
 		public bool UseVerification { get; set; }

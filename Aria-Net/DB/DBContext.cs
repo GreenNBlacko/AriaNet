@@ -7,15 +7,23 @@ namespace Aria_Net.DB {
 		public DbSet<Server> Servers { get; set; }
 		public DbSet<VerifiedUsers> VerifiedUsers { get; set; }
 
+		private Logger _logger;
+		private DiscordClient _client;
+
+		public DBContext(DiscordClient client) : base() { 
+			_logger = new Logger(); 
+			_client = client;
+		}
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-			var config = Program.config;
+			var config = _client._config;
 
 			optionsBuilder.UseMySql(
 				connectionString:string.Format("server={0};database=s146890_s146890_Main;user={1};password={2}", config["ARIANET:CONNECTION:IP"], config["ARIANET:CONNECTION:USERNAME"], config["ARIANET:CONNECTION:PASSWORD"]), 
 				ServerVersion.Create(Version.Parse("11.1.3"), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MariaDb)
 			);
 
-			Logger.Log("Database connected successfully");
+			_logger.Log("Database connected successfully");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
