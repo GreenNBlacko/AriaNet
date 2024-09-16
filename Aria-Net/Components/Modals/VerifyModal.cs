@@ -1,6 +1,6 @@
-﻿using Discord;
+﻿using Aria_Net.DB.Classes;
+using Discord;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 
 namespace Aria_Net.Components.Modals {
 	public class VerifyModal : BaseModal {
@@ -26,9 +26,7 @@ namespace Aria_Net.Components.Modals {
 
 			if (correctAnswer.ToLower() == interaction.Data.Components.Where(x => x.CustomId == "captcha_answer").Select(x => x.Value).First().ToLower()) {
 				await interaction.RespondAsync("Verification successful!", ephemeral: true);
-				await client.db.VerifiedUsers.AddAsync(new (interaction.User.Id.ToString()));
-				await client.db.SaveChangesAsync();
-				await client.db.Database.CloseConnectionAsync();
+				await client.db.GetTable<VerifiedUsers>().Add(interaction.User.Id);
 			} else
 				await interaction.RespondAsync("Verification failed! Try again.", ephemeral: true);
 		}

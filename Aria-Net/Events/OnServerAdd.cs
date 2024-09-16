@@ -1,7 +1,6 @@
 ﻿using Aria_Net.DB.Classes;
 using Aria_Net.IO;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 
 namespace Aria_Net.Events {
 	public class OnServerAdd : BaseEvent {
@@ -18,9 +17,7 @@ namespace Aria_Net.Events {
 		private async Task Invoke(SocketGuild server) {
 			await _logger.Log("Joined guild: " + server.Name, Discord.LogSeverity.Info);
 
-			await _client.db.Servers.AddAsync(new(server.Id.ToString(), new(), new List<CommandRestriction>()));
-			await _client.db.SaveChangesAsync();
-			await _client.db.Database.CloseConnectionAsync();
+			await _client.db.GetTable<Server>().Add(server.Id);
 		}
 	}
 }

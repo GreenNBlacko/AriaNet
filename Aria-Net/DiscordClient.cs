@@ -17,22 +17,26 @@ namespace Aria_Net
 		public Dictionary<string, BaseModal>									 Modals { get; private set; } = new();
 		public Dictionary<ulong, string>										 captchas { get; private set; } = new();
 
-		public DBContext db;
+		public Database db;
+
+		private CancellationToken _cts;
 
 		public Handlers.EventHandler _eventHandler { get; private set; }
 		public Handlers.CommandHandler _commandHandler { get; private set; }
 		public Handlers.ComponentHandler _componentHandler { get; private set; }
 
-		public DiscordClient(IConfigurationRoot config) : this(config, new DiscordSocketConfig()) {
+		public DiscordClient(IConfigurationRoot config, CancellationToken cts) : this(config, new DiscordSocketConfig(), cts) {
 			_config = config;
+			_cts = cts;
 		}
 
-		public DiscordClient(IConfigurationRoot config, DiscordSocketConfig clientConfig) : base(clientConfig) {
+		public DiscordClient(IConfigurationRoot config, DiscordSocketConfig clientConfig, CancellationToken cts) : base(clientConfig) {
 			_config = config;
+			_cts = cts;
 		}
 
 		public async Task Start() {
-			db = new DBContext(this);
+			db = new Database(_config["ARIANET:CONNECTION:IP"], "s146890_s146890_Main", _config["ARIANET:CONNECTION:USERNAME"], _config["ARIANET:CONNECTION:PASSWORD"]);
 
 			_eventHandler = new Handlers.EventHandler(this);
 			_commandHandler = new Handlers.CommandHandler(this);
@@ -44,7 +48,10 @@ namespace Aria_Net
 			await LoginAsync(TokenType.Bot, _config["ARIANET:DISCORD:TOKEN"]);
 			await StartAsync();
 
-			await Task.Delay(-1);
+			await Task.Delay(-1, _cts);
+
+			await LogoutAsync();
+			await DisposeAsync();
 		}
 	}
 }

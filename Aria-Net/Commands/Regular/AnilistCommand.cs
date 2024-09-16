@@ -32,7 +32,7 @@ namespace Aria_Net.Commands.Regular {
 				.Build();
 		}
 
-		protected override Task Execute(SocketSlashCommand interaction, CommandOptions options, DiscordClient client) {
+		protected override async Task Execute(SocketSlashCommand interaction, CommandOptions options, DiscordClient client) {
 			var subCommand = options.First();
 			var subCommandOptions = subCommand.Options;
 			var title = subCommandOptions["title"].GetValue<string>();
@@ -44,7 +44,7 @@ namespace Aria_Net.Commands.Regular {
 				_ => throw new NotSupportedException()
 			};
 
-			return SearchMedia(title, type, count, interaction, client);
+			await SearchMedia(title, type, count, interaction, client);
 		}
 
 		private async Task SearchMedia(string title, MediaType type, int count, SocketSlashCommand interaction, DiscordClient client) {

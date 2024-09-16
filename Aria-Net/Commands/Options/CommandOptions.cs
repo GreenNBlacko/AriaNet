@@ -8,9 +8,14 @@ namespace Aria_Net.Commands.Options {
 			_options = options;
 		}
 
-		public CommandOption this[string key] {
+		public CommandOption? this[string key] {
 			get {
-				return new(_options.Where(x => x.Name == key).First());
+				var option = _options.Where(x => x.Name == key);
+
+				if(option.Count() == 0)
+					return new(null);
+
+				return new(option.First());
 			}
 		}
 

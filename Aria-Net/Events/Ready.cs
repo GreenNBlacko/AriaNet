@@ -1,7 +1,6 @@
 ﻿using Aria_Net.DB.Classes;
 using Aria_Net.IO;
 using Discord;
-using Microsoft.EntityFrameworkCore;
 
 namespace Aria_Net.Events {
 	public class Ready : BaseEvent {
@@ -23,26 +22,23 @@ namespace Aria_Net.Events {
 			await _logger.Log("Bot initialized");
 
 			_ = Task.Run(async () => {
-				await db.Database.EnsureCreatedAsync();
-
 				await _logger.Log("Crawling servers");
 				foreach (var server in _client.Guilds.ToArray()) {
 					if (server == null)
 						continue;
 
 					try {
-						if ((await db.Servers.FindAsync(server.Id.ToString())) != null)
+						if (await db.GetTable<Server>().Exists(server.Id))
 							continue;
 
-						db.Servers.Add(new Server(server.Id.ToString(), new VerificationClass(), new List<CommandRestriction>()));
+						await db.GetTable<Server>().Add(server.Id);
 						await _logger.Log($"Added {server.Name} to the database");
 					} catch (Exception e) {
 						await _logger.Log(new LogMessage(LogSeverity.Error, e.Source, e.Message, e));
 					}
 				}
 
-				await db.SaveChangesAsync();
-				await db.Database.CloseConnectionAsync();
+				await _logger.Log("DB setup done");
 			});
 		}
 	}

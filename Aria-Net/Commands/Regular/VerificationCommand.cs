@@ -1,10 +1,9 @@
 ﻿using Aria_Net.Commands.Options;
+using Aria_Net.DB.Classes;
 using Aria_Net.IO;
 using CaptchaGen;
 using Discord;
-using Discord.Interactions;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 
 namespace Aria_Net.Commands.Regular {
 	public class VerificationCommand : BaseCommand {
@@ -22,10 +21,11 @@ namespace Aria_Net.Commands.Regular {
 		protected override async Task Execute(SocketSlashCommand interaction, CommandOptions options, DiscordClient client) {
 			await interaction.DeferAsync(ephemeral: true);
 
-			if((await client.db.VerifiedUsers.FindAsync(interaction.User.Id.ToString())) != null) {
+			var verifiedUsersTable = client.db.GetTable<VerifiedUsers>();
+
+			if ((await verifiedUsersTable.IsVerifed(interaction.User.Id))) {
 				var followup = await interaction.FollowupAsync("You are already verified!", ephemeral: true);
 				Timeout(followup.DeleteAsync, 5000);
-				await client.db.Database.CloseConnectionAsync();
 				return;
 			}
 

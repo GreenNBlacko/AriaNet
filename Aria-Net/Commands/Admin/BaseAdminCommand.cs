@@ -6,8 +6,6 @@ using Aria_Net.Commands.Options;
 namespace Aria_Net.Commands.Admin
 {
 #nullable enable
-    [Group("admin", "Manage the bot's settings on the server.")]
-    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public abstract class BaseAdminCommand
     {
         public abstract string Name { get; }
