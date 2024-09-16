@@ -1,6 +1,7 @@
 ﻿using Aria_Net.Commands.Options;
 using Aria_Net.DB.Classes;
 using Aria_Net.IO;
+using Aria_Net.Services;
 using CaptchaGen;
 using Discord;
 using Discord.WebSocket;
@@ -30,7 +31,7 @@ namespace Aria_Net.Commands.Regular {
 			}
 
 			var captcha = CaptchaCodeFactory.GenerateCaptchaCode(8);
-			var image = ImageFactory.GenerateImage($"   {captcha}   ", 300, 700, 80);
+			var image = new MemoryStream(new CaptchaService().GenerateCaptcha(captcha));
 
 			await new Logger().Log("Code for skill issue: " + captcha);
 
